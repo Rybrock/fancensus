@@ -19,12 +19,6 @@
                   {{ sortColumn === 'count' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
                 </button>
               </th>
-              <th scope="col" class="table-header">
-                Activities
-                <button @click="toggleSort('totalActivities')" class="ml-1 focus:outline-none">
-                  {{ sortColumn === 'totalActivities' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
-                </button>
-              </th>
               <th scope="col" class="table-header">Actions</th>
             </tr>
           </thead>
@@ -43,7 +37,6 @@
                 </div>
               </td>
               <td class="table-cell">{{ formatNumber(country.count) }}</td>
-              <td class="table-cell">{{ formatNumber(country.totalActivities) }}</td>
               <td class="table-cell">
                 <button 
                   @click="$emit('selectCountry', country)" 
@@ -147,7 +140,7 @@
     return countryCodeMap[countryCode] || countryCode;
   };
   
-  const sortColumn = ref('totalActivities');
+  const sortColumn = ref('count');
   const sortDirection = ref('desc');
   
   const currentPage = ref(1);

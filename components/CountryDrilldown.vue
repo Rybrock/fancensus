@@ -21,7 +21,6 @@
                 <thead class="bg-gray-50">
                   <tr>
                     <th scope="col" class="table-header">Product</th>
-                    <th scope="col" class="table-header">Activities</th>
                     <th scope="col" class="table-header">Countrycode</th>
                     <th scope="col" class="table-header">Date</th>
                   </tr>
@@ -29,7 +28,6 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="(item, index) in paginatedItems" :key="index" :class="{ 'table-row-alt': index % 2 !== 0 }">
                     <td class="table-cell font-medium text-gray-700">{{ item?.product || 'N/A' }}</td>
-                    <td class="table-cell">{{ formatNumber(item?.activities) }}</td>
                     <td class="table-cell">{{ item?.countrycode || 'N/A' }}</td>
                     <td class="table-cell">{{ formatDate(item?.date) }}</td>
                   </tr>
@@ -164,13 +162,6 @@
   
   const close = () => {
     emit('close');
-  };
-  
-  const formatNumber = (num) => {
-    if (num === undefined || num === null) {
-      return '0';
-    }
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   
   const formatDate = (dateString) => {

@@ -133,31 +133,16 @@ export const groupByCountry = (data) => {
  * @returns {Array}
  */
 export const getCountrySummary = (data) => {
-  const grouped = groupByCountry(data);
-  
-  return Object.keys(grouped).map(country => {
-    const items = grouped[country];
-    
-    const activitiesField = items.length > 0 
-      ? Object.keys(items[0]).find(key => 
-          key.toLowerCase().includes('activit') || 
-          key.toLowerCase().includes('total')
-        ) 
-      : null;
-    
-    return {
-      country,
-      count: items.length,
-      items: items,
-      totalActivities: items.reduce((sum, item) => {
-        return sum + (activitiesField 
-          ? safeParseNumber(item[activitiesField]) 
-          : 0);
-      }, 0)
-    };
-  }).sort((a, b) => b.totalActivities - a.totalActivities);
-};
-
+    const grouped = groupByCountry(data);
+    return Object.keys(grouped).map(country => {
+      const items = grouped[country];
+      return {
+        country,
+        count: items.length,
+        items: items
+      };
+    }).sort((a, b) => b.count - a.count);
+  };
 /**
  * @param {Array} data
  * @returns {Array}
@@ -176,33 +161,4 @@ export const getCountryDistribution = (data) => {
       percentage: Math.round((count / data.length) * 100)
     }))
     .sort((a, b) => b.count - a.count);
-};
-
-/**
- * @param {Array} data
- * @returns {Object}
- */
-export const getOverallStats = (data) => {
-  const activitiesField = data.length > 0 
-    ? Object.keys(data[0]).find(key => 
-        key.toLowerCase().includes('activit') || 
-        key.toLowerCase().includes('total')
-      ) 
-    : null;
-
-  const countries = new Set(
-    data.map(item => item.countrycode || item.country || item.nation || 'Unknown')
-  );
-  const products = new Set(data.map(item => item.product || 'Unknown'));
-  
-  return {
-    totalRecords: data.length,
-    totalActivities: data.reduce((sum, item) => {
-      return sum + (activitiesField 
-        ? safeParseNumber(item[activitiesField]) 
-        : 0);
-    }, 0),
-    uniqueCountries: countries.size,
-    uniqueProducts: products.size
-  };
 };

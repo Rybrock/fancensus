@@ -67,7 +67,6 @@ const props = defineProps({
   }
 });
 
-// Sorting state
 const sortColumn = ref('activities');
 const sortDirection = ref('desc');
 

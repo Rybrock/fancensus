@@ -49,7 +49,7 @@
   </template>
   
   <script setup>
-  import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+  import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
   import { Chart, registerables } from 'chart.js';
   import { fetchData, getCountrySummary } from '@/services/dataService';
   
@@ -79,98 +79,48 @@
   
     const ctx = chartRef.value.getContext('2d');
     const labels = countryData.value.map(item => item.country);
+    const recordCounts = countryData.value.map(item => item.count);
+    const backgroundColors = generateColors(labels.length);
     
-    if (chartType.value === 'bar' || chartType.value === 'line') {
-      const activityData = countryData.value.map(item => item.totalActivities);
-      const recordCounts = countryData.value.map(item => item.count);
-      
-      const config = {
-        type: chartType.value,
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Total Activities',
-              data: activityData,
-              backgroundColor: chartType.value === 'line' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.5)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1,
-              tension: chartType.value === 'line' ? 0.1 : 0,
-              fill: chartType.value === 'line'
-            },
-            {
-              label: 'Number of Records',
-              data: recordCounts,
-              backgroundColor: chartType.value === 'line' ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.5)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
-              tension: chartType.value === 'line' ? 0.1 : 0,
-              fill: chartType.value === 'line'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false
-            }
+    const config = {
+      type: chartType.value,
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Number of Records',
+            data: recordCounts,
+            backgroundColor: chartType.value === 'line' 
+              ? 'rgba(54, 162, 235, 0.2)' 
+              : backgroundColors,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            tension: chartType.value === 'line' ? 0.1 : 0,
+            fill: chartType.value === 'line'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
           },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
+          tooltip: {
+            mode: 'index',
+            intersect: false
           }
-        }
-      };
-      
-      chartInstance = new Chart(ctx, config);
-    } 
-    else if (chartType.value === 'pie') {
-      const activityData = countryData.value.map(item => item.totalActivities);
-      const backgroundColors = generateColors(labels.length);
-      
-      const config = {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              data: activityData,
-              backgroundColor: backgroundColors,
-              borderWidth: 1
-            }
-          ]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'right',
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const label = context.label || '';
-                  const value = context.raw;
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = Math.round((value / total) * 100);
-                  return `${label}: ${value} (${percentage}%)`;
-                }
-              }
-            }
+        scales: {
+          y: {
+            beginAtZero: true
           }
         }
-      };
-      
-      chartInstance = new Chart(ctx, config);
-    }
+      }
+    };
+    
+    chartInstance = new Chart(ctx, config);
   };
   
   watch(countryData, updateChart, { deep: true });
