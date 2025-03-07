@@ -52,43 +52,19 @@ export const fetchData = async () => {
  * @returns {Object}
  */
 export const groupByProduct = (data) => {
-  const findActivitiesField = (item) => {
-    const possibleFields = [
-      'activities', 
-      'activity', 
-      'activityCount', 
-      'total_activities', 
-      'activity_count'
-    ];
-    
-    for (let field of possibleFields) {
-      if (item.hasOwnProperty(field)) {
-        return field;
-      }
-    }
-    
-    return null;
-  };
-
   return data.reduce((acc, item) => {
     const product = item.product || 'Unknown Product';
-    
-    const activitiesField = findActivitiesField(item);
-    const activities = activitiesField 
-      ? safeParseNumber(item[activitiesField]) 
-      : 0;
     
     if (!acc[product]) {
       acc[product] = {
         product,
         count: 0,
-        activities: 0,
+        headline: item.headline || 'N/A',
         countries: new Set()
       };
     }
     
     acc[product].count++;
-    acc[product].activities += activities;
     
     const country = item.countrycode || item.country || item.nation || 'Unknown';
     if (country !== 'Unknown') {
@@ -110,9 +86,8 @@ export const getProductSummary = (data) => {
     ...product,
     countries: Array.from(product.countries).filter(Boolean),
     countriesCount: product.countries.size
-  })).sort((a, b) => b.activities - a.activities);
+  })).sort((a, b) => b.count - a.count);
 };
-
 /**
  * @param {Array} data
  * @returns {Object}
